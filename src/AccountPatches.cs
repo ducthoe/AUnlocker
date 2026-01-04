@@ -1,9 +1,27 @@
 using AmongUs.Data.Player;
 using HarmonyLib;
+using Epic.OnlineServices;
+using Epic.OnlineServices.KWS;
 
 namespace AUnlocker;
 
 // Some of the below patches are from https://github.com/scp222thj/MalumMenu/
+public static class KWS_Bypass
+{
+    public static void ApplyPatch(Harmony harmony)
+    {
+        var original = AccessTools.Method(typeof(KWSInterface), nameof(KWSInterface.QueryPermissions));
+        var prefix = AccessTools.Method(typeof(KWS_Bypass), nameof(Prefix));
+        harmony.Patch(original, new HarmonyMethod(prefix));
+    }
+
+    public static bool Prefix(OnQueryPermissionsCallback completionDelegate)
+    {
+        var spoofedInfo = new QueryPermissionsCallbackInfo { ResultCode = Result.Success, IsMinor = false };
+        completionDelegate?.Invoke(ref spoofedInfo);
+        return false;
+    }
+}
 
 [HarmonyPatch(typeof(EOSManager), nameof(EOSManager.IsFreechatAllowed))]
 public static class UnlockFreechat_EOSManager_IsFreechatAllowed_Postfix
