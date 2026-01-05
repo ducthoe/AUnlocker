@@ -21,6 +21,7 @@ public partial class AUnlocker : BasePlugin
     // Account
     public static ConfigEntry<bool> UnlockGuest;
     public static ConfigEntry<bool> UnlockMinor;
+    public static ConfigEntry<bool> UnlockGuardian;
     public static ConfigEntry<bool> RemovePenalty;
 
     // Chat
@@ -56,6 +57,7 @@ public partial class AUnlocker : BasePlugin
         // Account
         UnlockGuest = Config.Bind("Account", "RemoveGuestStatus", false, "Remove guest restrictions (no custom name, no free chat, no friend list)");
         UnlockMinor = Config.Bind("Account", "RemoveMinorStatus", false, "Remove minor status and restrictions (no online play)");
+        UnlockGuardian = Config.Bind("Account", "RemoveGuardianCheck", false, "Spoofs the account as an adult account (Removes the need for Guardian Verification).");
         RemovePenalty = Config.Bind("Account", "NoDisconnectPenalty", true, "Remove the penalty after disconnecting from too many lobbies");
         // Chat
         PatchChat = Config.Bind("Chat", "Enabled", true, "Allow Ctrl+C and Ctrl+V (copy-pasting)\nBe able to send URLs and Email addresses\nIncrease the character limit from 100 to 120");
@@ -96,6 +98,7 @@ public partial class AUnlocker : BasePlugin
         AddComponent<KeybindListener>().Plugin = this;
         HudManager_Start_Patch.Plugin = this;
         ChatJailbreak_ChatController_Update_Postfix.Plugin = this;
+        if (UnlockGuardian.Value) KWS_Bypass.ApplyPatch(Harmony);
     }
 }
 
